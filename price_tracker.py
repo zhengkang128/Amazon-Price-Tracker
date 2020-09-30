@@ -63,10 +63,13 @@ def scrap(URL, target, email):
         arg = (title, d1, total_price, converted_price, converted_shipping)
         mycursor.execute(query,arg)
         connection.commit()
-        send_mail_drop_price(title, converted_price, converted_shipping, email,URL)
         print("Updated Database")
     else:
         print("no updates")
+
+    if (myresult[0][3]!=total_price):
+        send_mail_drop_price(title, converted_price, converted_shipping, email,URL)
+
 
 #Reached target
 def send_mail(title, price, shipping, email, URL):
@@ -97,7 +100,7 @@ def send_mail(title, price, shipping, email, URL):
     print("Mail sent")
     server.quit()
 
-def send_mail_drop_price(title, price, shipping, email):
+def send_mail_drop_price(title, price, shipping, email, URL):
     server = smtplib.SMTP('smtp.gmail.com',587)
     server.ehlo()
     server.starttls()
@@ -125,23 +128,30 @@ def send_mail_drop_price(title, price, shipping, email):
     print("Mail sent")
     server.quit()
 
-email = input("Please enter your email address: ")
-numLinks = int(input("Enter number of websites for scraping (max 10): "))
+inputs = open('input.txt', 'r') 
+Lines = inputs.readlines() 
+URL_list = []
+price_target = []
 
-#email = "chuazhengkang123@gmail.com" #default
-#numLinks = 2 #default
-#URL_list = ["https://www.amazon.com/gp/product/B07N6S4SY1/r", "https://www.amazon.com/gp/product/B086KKKT15/"]
-#price_target = [10000, 100000] #default
+count = 0
+# Strips the newline character 
+for line in Lines:
+    if count==0:
+        email = line
+    elif (count%2)==1:
+        URL_list.append(line.rstrip("\n"))
+    else:
+        price_target.append(float(line))
+    count = count + 1
 
-for i in range(numLinks):
-    URL_list.append(input("Enter URL Link for website #" + str(i+1)+ ": "))
-    price_target.append(float(input("Enter price target for this product: ")))
+numLinks = count//2
+        
     
 print("Notification will be sent to " + email)
 print("Scraping price information from: ")
 for i in range(numLinks):
     print(URL_list[i])
-    print("Target: " + str(price_target[i]))
+    print("Target: $" + str(price_target[i]))
 
 start = int(round(time.time()))
 

@@ -6,18 +6,6 @@ import smtplib
 from datetime import datetime
 import mysql.connector
 
-#URL = 'https://www.amazon.com/gp/product/B07N6S4SY1/r'
-#connection = mysql.connector.connect(host='localhost',
-                                #    database='price_trackerdb',
-                                 #   user='root',
-                                  #  password='30082010')
-#mycursor = connection.cursor()
-
-#mycursor.execute("SELECT * FROM price_information")
-
-#myresult = mycursor.fetchall()
-
-#print(myresult)
 def scrap(URL, target, email):
     connection = mysql.connector.connect(host='localhost',
                                         database='price_trackerdb',

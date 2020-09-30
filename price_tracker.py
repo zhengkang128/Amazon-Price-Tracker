@@ -6,6 +6,7 @@ import smtplib
 from datetime import datetime
 import mysql.connector
 
+
 def scrap(URL, target, email):
     connection = mysql.connector.connect(host='localhost',
                                         database='price_trackerdb',
@@ -49,7 +50,7 @@ def scrap(URL, target, email):
 
     #Send mail
     if (converted_price+converted_shipping <target):
-        send_mail(title, converted_price, converted_shipping, email)
+        send_mail(title, converted_price, converted_shipping, email, URL)
         
     #mycursor.execute("SELECT * FROM price_information WHERE product_name = " + str(title) + " ORDER BY id DESC LIMIT 1;")
     mycursor.execute("SELECT * FROM price_information WHERE product_name = " + "\"" +  str(title) + "\"" + " ORDER BY id DESC LIMIT 1;")  
@@ -62,11 +63,13 @@ def scrap(URL, target, email):
         arg = (title, d1, total_price, converted_price, converted_shipping)
         mycursor.execute(query,arg)
         connection.commit()
+        send_mail_drop_price(title, converted_price, converted_shipping, email,URL)
         print("Updated Database")
     else:
         print("no updates")
 
-def send_mail(title, price, shipping, email):
+#Reached target
+def send_mail(title, price, shipping, email, URL):
     server = smtplib.SMTP('smtp.gmail.com',587)
     server.ehlo()
     server.starttls()
@@ -75,12 +78,40 @@ def send_mail(title, price, shipping, email):
 
 
     total = price + shipping
-    subject = 'Price fell down below target'
+    subject = 'Price fell down below target!'
     body1 = 'Product: $' + title
     body2 = 'Total Price: $' + str(total)
     body3 = 'Product Price: $' + str(price)
     body4 = 'Shipping Price: $' + str(shipping)
-    body5 = 'https://www.amazon.com/gp/product/B07N6S4SY1/r'
+    body5 = URL
+
+
+    
+    msg = f"Subject: {subject}\n\n{body1}\n\n{body2}\n{body3}\n{body4}\n\n{body5}"
+
+    server.sendmail(
+        'webscrapper101@gmail.com',
+        email,
+        msg
+        )
+    print("Mail sent")
+    server.quit()
+
+def send_mail_drop_price(title, price, shipping, email):
+    server = smtplib.SMTP('smtp.gmail.com',587)
+    server.ehlo()
+    server.starttls()
+    server.ehlo()
+    server.login('webscrapper101@gmail.com', "300810d0t.+")
+
+
+    total = price + shipping
+    subject = 'There is a drop on the price.'
+    body1 = 'Product: $' + title
+    body2 = 'Total Price: $' + str(total)
+    body3 = 'Product Price: $' + str(price)
+    body4 = 'Shipping Price: $' + str(shipping)
+    body5 = URL
 
 
     

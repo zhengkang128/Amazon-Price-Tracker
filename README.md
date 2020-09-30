@@ -24,17 +24,17 @@ matplotlib
 ### Instructions  
 1. Run create_price_tracker_db.sql to create database.  
 2. Change the user and password in price_tracker.py to your connection for MySQL.  
-3. Edit input.txt file in the following order:
-      <E-mail>  
-      <URL #1>  
-      <Target Price #1>  
-      <URL #2>  
-      <Target Price #2>  
-           .  
-           .  
-           .  
-      <URL #N>  
-      <Target Price #N>  
+3. Edit input.txt file in the following order:  
+            <mail@example.com>  
+            <URL #1>  
+            <Target Price #1>  
+            <URL #2>  
+            <Target Price #2>  
+                    .  
+                    .  
+                    .  
+                <URL #N>  
+            <Target Price #N>  
  4. Run webscrapping script, price_tracker.py  
   
 

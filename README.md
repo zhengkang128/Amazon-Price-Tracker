@@ -1,7 +1,7 @@
 # Amazon Price Tracker
 
 ## Introduction
-A simple application that sends email notification when the price of your products falls below a certain value.  
+A simple application that notifies you through email when the price of your targeted products falls below your desired value.  
 This application uses BeautifulSoup, a web scrapping library, to obtain price information of products.  
 A MySQL database is used to store all real-time information of products when there is a change of pricing.
 

@@ -24,8 +24,8 @@ matplotlib
 ### Instructions  
 1. Run create_price_tracker_db.sql to create database.  
 2. Change the user and password in price_tracker.py to your connection for MySQL.  
-3. Edit input.txt file in the following order:  
-      <Your-Email-Address>   
+3. Edit input.txt file in the following order:
+      <E-mail>  
       <URL #1>  
       <Target Price #1>  
       <URL #2>  

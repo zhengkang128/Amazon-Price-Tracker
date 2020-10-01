@@ -5,11 +5,16 @@ import time
 import smtplib
 from datetime import datetime
 import mysql.connector
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from matplotlib.ticker import FormatStrFormatter
+from statistics import mean 
+
 
 
 def scrap(URL, target, email):
     connection = mysql.connector.connect(host='localhost',
-                                        database='price_trackerdb',
+                                        database='tracker_db',
                                         user='root',
                                         password='30082010')
     mycursor = connection.cursor()
@@ -25,9 +30,27 @@ def scrap(URL, target, email):
     #Scrape content
     soup = BeautifulSoup(content, 'html.parser')
     title = soup.find(id="productTitle").get_text().strip().replace('”',' inch').replace('"',' inch')
-    price = soup.find(id="priceblock_ourprice").get_text()
-    shipping_price = soup.find(class_="a-size-base a-color-secondary").get_text()
+    price = soup.find(id="price_inside_buybox")
+    if price is None:
+        price = soup.find(id="newBuyBoxPrice")
+        if price is None:
+            price = soup.find(id="priceblock_dealprice")
+            if price is None:
+                price = "0"
+            else:
+                price=price.get_text()
+        else:
+            price=price.get_text()
+    else:
+        price=price.get_text()
     
+    
+    
+    shipping_price = soup.find(class_="a-size-base a-color-secondary")
+    if shipping_price is None:
+        shipping_price = "0"
+    else:
+        shipping_price = shipping_price.get_text()    
     #float conversion
     converted_price = ""
     converted_shipping = ""
@@ -38,7 +61,10 @@ def scrap(URL, target, email):
         if (i.isdigit() or i=="."):
             converted_shipping = converted_shipping + i
             
+            
     converted_price = float(converted_price)
+    if (converted_shipping == ""):
+        converted_shipping = 0
     converted_shipping = float(converted_shipping)
     total_price = converted_price + converted_shipping
 
@@ -56,19 +82,83 @@ def scrap(URL, target, email):
     mycursor.execute("SELECT * FROM price_information WHERE product_name = " + "\"" +  str(title) + "\"" + " ORDER BY id DESC LIMIT 1;")  
     myresult = mycursor.fetchall()
 
-    if (len(myresult)==0 or myresult[0][3]!=total_price): #no results
-        query = "INSERT INTO price_information (product_name, date_retrieved, total_price, product_price, shipping_price) VALUES (%s, %s, %s, %s, %s);"
-        now = datetime.now()
-        d1 = now.strftime('%Y-%m-%d %H:%M:%S')
-        arg = (title, d1, total_price, converted_price, converted_shipping)
+  
+    query = "INSERT INTO price_information (product_name, date_retrieved, total_price, product_price, shipping_price) VALUES (%s, %s, %s, %s, %s);"
+    now = datetime.now()
+    d1 = now.strftime('%Y-%m-%d %H:%M:%S')
+    arg = (title, d1, total_price, converted_price, converted_shipping)
+    mycursor.execute(query,arg)
+    connection.commit()
+    print("Updated Database")
+        
+    if (len(myresult)!=0):
+        if (abs(myresult[0][3]-total_price)>=0.01):
+            send_mail_drop_price(title, converted_price, converted_shipping, email,URL)
+            print("Change in price")
+        else:
+            print("No change in price")
+    else:
+        print("New item")
+
+    query = "SELECT id FROM products WHERE product_name = " + "\"" +  str(title) + "\""
+    mycursor.execute(query)
+    result2 = mycursor.fetchall()
+
+    if len(result2)==0:
+        query = "INSERT INTO products (product_name, comments) VALUES (%s, %s);"
+        arg = (title, URL)  
         mycursor.execute(query,arg)
         connection.commit()
-        print("Updated Database")
-    else:
-        print("no updates")
+        print("Updated Products Table")
 
-    if (myresult[0][3]!=total_price):
-        send_mail_drop_price(title, converted_price, converted_shipping, email,URL)
+    #Product graph
+    query = "SELECT * FROM price_information pi JOIN products p ON p.product_name = pi.product_name WHERE pi.product_name = " + "\"" + title + "\" ORDER BY pi.date_retrieved"
+    mycursor.execute(query)
+    myresult = mycursor.fetchall()
+
+    product_id = myresult[0][6]
+    product_name = myresult[0][1]
+    total_price = []
+    product_price = []
+    shipping_price = []
+    date = []
+
+    for rows in myresult:
+        total_price.append(rows[3])
+        product_price.append(rows[4])
+        shipping_price.append(rows[5])
+        date.append(rows[2])
+    fig, ax = plt.subplots(figsize=(20, 15))
+
+    mean_total = round(mean(total_price),2)
+    mean_product = round(mean(product_price),2)
+    mean_shipping = round(mean(shipping_price),2)
+
+    ax.plot(date,
+            total_price,
+            color='purple', label = "Total Price (mean = $" + str(mean_total) + ")")
+
+    ax.plot(date,
+            product_price,
+            color='blue', label = "Product Price (mean = $" + str(mean_product) + ")")
+
+    ax.plot(date,
+            shipping_price,
+            color='red', label = "Shipping Price (mean = $" + str(mean_shipping) + ")")
+
+    ax.set(xlabel="Date and Time",
+           ylabel="Price (SGD)",
+           title="Changes of Pricing for \n" + product_name + "\n")
+    ax.legend()
+
+    ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d %H:%M:%S'))
+    fig.autofmt_xdate()
+
+    plt.savefig("results/product_num" + str(product_id) +'.png')
+
+
+
 
 
 #Reached target
@@ -109,7 +199,7 @@ def send_mail_drop_price(title, price, shipping, email, URL):
 
 
     total = price + shipping
-    subject = 'There is a drop on the price.'
+    subject = 'There is a change in the price.'
     body1 = 'Product: $' + title
     body2 = 'Total Price: $' + str(total)
     body3 = 'Product Price: $' + str(price)
@@ -128,6 +218,10 @@ def send_mail_drop_price(title, price, shipping, email, URL):
     print("Mail sent")
     server.quit()
 
+
+    
+
+# Using readlines() 
 inputs = open('input.txt', 'r') 
 Lines = inputs.readlines() 
 URL_list = []
@@ -152,6 +246,7 @@ print("Scraping price information from: ")
 for i in range(numLinks):
     print(URL_list[i])
     print("Target: $" + str(price_target[i]))
+print("")
 
 start = int(round(time.time()))
 
@@ -162,7 +257,7 @@ for i in range(numLinks):
     
 while (True):
         
-    if (int(round(time.time())) - start >= (60*60*2)):
+    if (int(round(time.time())) - start >= (60*60)):
         for i in range(numLinks):
             scrap(URL_list[i],price_target[i], email)
         start = int(round(time.time()))

@@ -8,9 +8,11 @@ This software automates web-scrapping processes using the BeautifulSoup package 
 ### Softwares
 Python 3.6  
 MySQL  
+Chromedriver (Download at https://chromedriver.chromium.org/ and unzip the .exe file at the same directory as the python scripts)
 
 ### Libraries  
 requests  
+Selenium
 bs4    
 time  
 smtplib  

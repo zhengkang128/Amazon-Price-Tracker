@@ -49,4 +49,4 @@ matplotlib
  - These graphs are updated and accessible after every web-scrapping process
 
 
-![alt text](https://github.com/zhengkang128/Amazon-Price-Tracker/blob/master/price_compare_2020-10-02_20_00_21.png?raw=true)
+![alt text](https://github.com/zhengkang128/Amazon-Price-Tracker/blob/master/results/product_num4.png?raw=true)

@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-from selenium import webdriver
 import time
 import smtplib
 from datetime import datetime
@@ -11,24 +10,20 @@ from matplotlib.ticker import FormatStrFormatter
 from statistics import mean 
 import numpy as np
 
+interval = 60 * 60 * 1 #seconds x minutes x hours. Change this value to adjust your interval to web scrape
 
 def scrap(URL, target, email):
     connection = mysql.connector.connect(host='localhost',
                                         database='tracker_db',
-                                        user='root',
-                                        password='30082010')
+                                        user='root', #change user
+                                        password='30082010') #input your password here
+    headers = {"User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36'}
     mycursor = connection.cursor()
+    content = requests.get(URL, headers=headers).text
 
-
-
-    #Selenium to render JS and obtain content
-    driver = webdriver.Chrome("chromedriver.exe")
-    driver.get(URL) 
-    content = driver.page_source.encode('utf-8').strip()
-    driver.quit()
 
     #Scrape content
-    soup = BeautifulSoup(content, 'html.parser')
+    soup = BeautifulSoup(content, 'lxml')
     title = soup.find(id="productTitle").get_text().strip().replace('”',' inch').replace('"',' inch')
     price = soup.find(id="price_inside_buybox")
     if price is None:
@@ -153,7 +148,7 @@ def scrap(URL, target, email):
                title="Changes of Pricing for \n" + product_name + "\n")
         ax.legend()
         upper = 5 * round(max(total_price)/5)
-
+        ax.set_ylim(ymin=0)
         ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d %H:%M:%S'))
         fig.autofmt_xdate()
@@ -249,6 +244,7 @@ URL_list = []
 price_target = []
 
 count = 0
+
 # Strips the newline character 
 for line in Lines:
     if count==0:
@@ -319,7 +315,7 @@ while (True):
     product_current = []
     current_price = []
     current_shipping = []
-    if (int(round(time.time())) - start >= (60*60*2)):
+    if (int(round(time.time())) - start >= (interval)):
         print("")
         print("Fetching results")
         for i in range(numLinks):
@@ -354,9 +350,6 @@ while (True):
 
         plt.savefig("price_compare/price_compare" + "_" + timing.replace(" ","_").replace(":","_") + ".png")
         plt.close()
-
-
-
 
         
         start = int(round(time.time()))

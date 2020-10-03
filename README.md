@@ -2,8 +2,7 @@
 
 ## Introduction
 A simple application that notifies you through email when the price of your targeted products falls below your desired value.  
-This application uses BeautifulSoup, a web scrapping library, to obtain price information of products.  
-A MySQL database is used to store all real-time information of products when there is a change of pricing.
+This software automates web-scrapping processes using the BeautifulSoup package to extract pricing data from several product webpages at a given time interval. Pricing data is stored in MySQL database to produce graphical visualizations of information such as the change of pricing over time for a given product with matplotlib library. This software also sends notification through email when the price of the targeted products falls below the consumer’s target value using the smtplib module.  
 
 ## Requirements  
 ### Softwares

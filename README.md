@@ -35,6 +35,12 @@ matplotlib
                     .  
                 <URL #N>  
             <Target Price #N>  
- 4. Run webscrapping script, price_tracker.py  
-  
+ 4. Run webscrapping script, price_tracker.py
+ The script will scrape the product prices every hour. Intervals can be changed by editting the python script itself.
+ Product information will be downloaded
+ 5. Visualize Results
+ - If the price drops within target, a mail notification will be sent to the email you specified
+ - You can view the bar graph (.png) of price comparision among products in the price_compare folder
+ - You can view the graph (.png) that models the change of prices over time in the results folder
+ - These graphs are updated and accessible after every web-scrapping process
 

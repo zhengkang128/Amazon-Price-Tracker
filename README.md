@@ -47,4 +47,3 @@ matplotlib
  - You can view the bar graph (.png) of price comparision among products in the price_compare folder
  - You can view the graph (.png) that models the change of prices over time in the results folder
  - These graphs are updated and accessible after every web-scrapping process
-

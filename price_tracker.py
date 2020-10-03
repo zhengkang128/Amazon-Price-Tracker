@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from selenium import webdriver
 import time
 import smtplib
 from datetime import datetime
@@ -17,10 +18,13 @@ def scrap(URL, target, email):
                                         database='tracker_db',
                                         user='root', #change user
                                         password='30082010') #input your password here
-    headers = {"User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36'}
     mycursor = connection.cursor()
-    content = requests.get(URL, headers=headers).text
-
+    
+    #Selenium to render JS and obtain content
+    driver = webdriver.Chrome("chromedriver.exe")
+    driver.get(URL) 
+    content = driver.page_source.encode('utf-8').strip()
+    driver.quit()
 
     #Scrape content
     soup = BeautifulSoup(content, 'lxml')

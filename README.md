@@ -50,17 +50,17 @@ matplotlib
 
 ## Visualize Results
 
-### Comparison of Product Prices
+### Comparison of Product Prices  
 A bar graph is generated and saved to the price_compare folder to visualize the comparison of prices among all the products that were used as an input for price-tracking.  
-Respective .png files will be produced for each individual products and saved in the price_compare/ folder after every web-scrapping process.
+Respective .png files will be produced for each individual products and saved in the price_compare/ folder after every web-scrapping process.  
 An example is shown below:
 ![alt text](https://github.com/zhengkang128/Amazon-Price-Tracker/blob/master/price_compare/price_compare_2020-10-02_20_00_21.png?raw=true)  
 
-### Changes of Price over Time
+### Changes of Price over Time  
 The MySQL database records past information of prices that was obtained.  
-This graph is produced by retrieving information from the database containing past results to visualize the change of prices over time.
-Respective .png files will be produced for each individual products and saved in the results/ folder after every web-scrapping process.
-An example is shown below:  
+This graph is produced by retrieving information from the database containing past results to visualize the change of prices over time.  
+Respective .png files will be produced for each individual products and saved in the results/ folder after every web-scrapping process.  
+An example is shown below:
 ![alt text](https://github.com/zhengkang128/Amazon-Price-Tracker/blob/master/results/product_num4.png?raw=true)  
 
 

@@ -54,7 +54,7 @@ matplotlib
 A bar graph is generated and saved to the price_compare folder to visualize the comparison of prices among all the products that were used as an input for price-tracking.  
 Respective .png files will be produced for each individual products and saved in the price_compare/ folder after every web-scrapping process.  
 An example is shown below:
-![alt text](https://github.com/zhengkang128/Amazon-Price-Tracker/blob/master/price_compare/price_compare_2020-10-02_20_00_21.png?raw=true)  
+![alt text](https://github.com/zhengkang128/Amazon-Price-Tracker/blob/master/price_compare/price_compare_2020-10-03_15_28_10.png?raw=true)  
 
 ### Changes of Price over Time  
 The MySQL database records past information of prices that was obtained.  

@@ -8,12 +8,10 @@ This software automates web-scrapping processes using the BeautifulSoup package 
 ### Softwares
 Python 3.6  
 MySQL  
-Chromedriver (Download at https://chromedriver.chromium.org/ and unzip the .exe file at the same directory as the python scripts)  
 
 ### Libraries  
 requests  
-bs4  
-selenium  
+bs4    
 time  
 smtplib  
 datetime  
@@ -21,7 +19,7 @@ mysql.connector
 matplotlib  
 
 ## How To Use  
-1. Run create_price_tracker_db.sql to create database.  
+1. Run create_price_tracker_db.sql to create database. (You just have to do this once)
 
 2. Change the user and password in price_tracker.py to your connection for MySQL.  
 
